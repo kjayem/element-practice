@@ -8,7 +8,7 @@ var sanitizeHtml = require('sanitize-html');
 var template = require('./lib/template.js');
 
 
-
+//홈페이지
 // app.get('/', (req, res) => res.send('Hello World!'))
 app.get('/', function(request, response) {
 	fs.readdir('./data', function(error, filelist){
@@ -23,6 +23,7 @@ app.get('/', function(request, response) {
   });
 });
 
+//상세페이지 (HTML, CSS, etc.)
 app.get('/page/:pageId', function(request, response) {
   fs.readdir('./data', function(error, filelist){
     var filteredId = path.parse(request.params.pageId).base;
@@ -36,7 +37,7 @@ app.get('/page/:pageId', function(request, response) {
       var html = template.HTML(sanitizedTitle, list,
         `<h2>${sanitizedTitle}</h2>${sanitizedDescription}`,
         ` <a href="/create">create</a>
-          <a href="/update?id=${sanitizedTitle}">update</a>
+          <a href="/update/${sanitizedTitle}">update</a>
           <form action="delete_process" method="post">
             <input type="hidden" name="id" value="${sanitizedTitle}">
             <input type="submit" value="delete">
@@ -47,6 +48,7 @@ app.get('/page/:pageId', function(request, response) {
   });
 })
 
+//페이지 생성 클릭했을때
 app.get('/create', function(request, response) {
   fs.readdir('./data', function(error, filelist){
     var title = 'WEB - create';
@@ -66,6 +68,7 @@ app.get('/create', function(request, response) {
   });
 })
 
+//페이지 생성하고 submit 클릭했을때
 app.post('/create_process', function(request, response) {
   var body = '';
     request.on('data', function(data){
@@ -80,6 +83,53 @@ app.post('/create_process', function(request, response) {
           response.end();
         })
     });
+})
+
+//페이지 수정 클릭했을때
+app.get('/update/:pageId', function(request, response) {
+    fs.readdir('./data', function(error, filelist){
+    var filteredId = path.parse(request.params.pageId).base;
+    fs.readFile(`data/${filteredId}`, 'utf8', function(err, description){
+      var title = request.params.pageId;
+      var list = template.list(filelist);
+      var html = template.HTML(title, list,
+        `
+        <form action="/update_process" method="post">
+          <input type="hidden" name="id" value="${title}">
+          <p><input type="text" name="title" placeholder="title" value="${title}"></p>
+          <p>
+            <textarea name="description" placeholder="description">${description}</textarea>
+          </p>
+          <p>
+            <input type="submit">
+          </p>
+        </form>
+        `,
+        `<a href="/create">create</a> <a href="/update?id=${title}">update</a>`
+      );
+      response.send(html);
+    });
+  });
+})
+
+//페이지 수정하고 submit 클릭했을때
+app.post('/update_process', function(request, response) {
+  var body = '';
+  request.on('data', function(data){
+      body = body + data;
+  });
+  request.on('end', function(){
+      var post = qs.parse(body);
+      var id = post.id;
+      var title = post.title;
+      var description = post.description;
+      fs.rename(`data/${id}`, `data/${title}`, function(error){
+        fs.writeFile(`data/${title}`, description, 'utf8', function(err){
+          response.writeHead(302, {Location: `/page/${title}`});
+          response.end();
+        })
+      });
+  });
 })
 
 app.listen(3000, function() {
@@ -100,47 +150,9 @@ app.listen(3000, function() {
 //     var pathname = url.parse(_url, true).pathname;
 //     if(pathname === '/'){
 //       if(queryData.id === undefined){
-//     } else if(pathname === '/create'){
-//       
+//     } else if(pathname === '/create'){  
 //     } else if(pathname === '/create_process'){
-//       var body = '';
-//       request.on('data', function(data){
-//           body = body + data;
-//       });
-//       request.on('end', function(){
-//           var post = qs.parse(body);
-//           var title = post.title;
-//           var description = post.description;
-//           fs.writeFile(`data/${title}`, description, 'utf8', function(err){
-//             response.writeHead(302, {Location: `/?id=${title}`});
-//             response.end();
-//           })
-//       });
 //     } else if(pathname === '/update'){
-//       fs.readdir('./data', function(error, filelist){
-//         var filteredId = path.parse(queryData.id).base;
-//         fs.readFile(`data/${filteredId}`, 'utf8', function(err, description){
-//           var title = queryData.id;
-//           var list = template.list(filelist);
-//           var html = template.HTML(title, list,
-//             `
-//             <form action="/update_process" method="post">
-//               <input type="hidden" name="id" value="${title}">
-//               <p><input type="text" name="title" placeholder="title" value="${title}"></p>
-//               <p>
-//                 <textarea name="description" placeholder="description">${description}</textarea>
-//               </p>
-//               <p>
-//                 <input type="submit">
-//               </p>
-//             </form>
-//             `,
-//             `<a href="/create">create</a> <a href="/update?id=${title}">update</a>`
-//           );
-//           response.writeHead(200);
-//           response.end(html);
-//         });
-//       });
 //     } else if(pathname === '/update_process'){
 //       var body = '';
 //       request.on('data', function(data){
