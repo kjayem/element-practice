@@ -23,7 +23,7 @@ app.get('/', function(request, response) {
   });
 });
 
-//상세페이지 (HTML, CSS, etc.)
+//상세페이지 눌렀을때 (HTML, CSS, etc.)
 app.get('/page/:pageId', function(request, response) {
   fs.readdir('./data', function(error, filelist){
     var filteredId = path.parse(request.params.pageId).base;
