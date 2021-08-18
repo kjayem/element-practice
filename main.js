@@ -1,20 +1,19 @@
-const { response } = require('express');
 const express = require('express');
 const app = express();
 var fs = require('fs');
 var qs = require('querystring');
 var bodyParser = require('body-parser');
 var compression = require('compression');
-var template = require('./lib/template.js');
+var template = require('./public/js/template.js');
 var topicRouter = require('./routes/topic');
 
 //public 안에있는 정적인 파일들을 사용하기 위함
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(compression());
-app.get('*', function(request, response, next) {
+app.get('*', function(req, res, next) {
   fs.readdir('./data', function(error, filelist){
-    request.list = filelist;
+    req.list = filelist;
     next();
   });
 });
@@ -23,16 +22,16 @@ app.use('/topic', topicRouter);
 
 //홈페이지
 // app.get('/', (req, res) => res.send('Hello World!'))
-app.get('/', function(request, response) {
-    var title = 'Welcome';
+app.get('/', function(req, res) {
+    var title = 'jayemk';
     var description = 'Hello, Node.js';
-    var list = template.list(request.list);
+    var list = template.list(req.list);
     var html = template.HTML(title, list,
       `<h2>${title}</h2>${description}
-      <img src="/images/hello.jpg" style="width: 300px; display: block; margin-top: 10px;">`,
+      <img src="/img/hello.jpg" style="width: 300px; display: block; margin-top: 10px;">`,
       `<a href="/topic/create">create</a>`
     );
-    response.send(html);
+    res.send(html);
 });
 
 
@@ -46,6 +45,6 @@ app.use(function (err, req, res, next) {
   res.status(500).send('Something broke!')
 });
 
-app.listen(8080, function() {
-  console.log('Example app listening on port 8080!')
+app.listen(3000, function() {
+  console.log('Example app listening on port 3000!')
 });

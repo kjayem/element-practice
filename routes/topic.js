@@ -4,7 +4,7 @@ var router = express.Router();
 var path = require('path');
 var fs = require('fs');
 var sanitizeHtml = require('sanitize-html');
-var template = require('../lib/template.js');
+var template = require('../public/js/template.js');
 
 router.get('/create', function(request, response) {
     var title = 'WEB - create';
