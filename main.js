@@ -8,6 +8,7 @@ var compression = require('compression');
 var template = require('./lib/template.js');
 var topicRouter = require('./routes/topic');
 
+//public 안에있는 정적인 파일들을 사용하기 위함
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(compression());
@@ -45,6 +46,6 @@ app.use(function (err, req, res, next) {
   res.status(500).send('Something broke!')
 });
 
-app.listen(3000, function() {
-  console.log('Example app listening on port 3000!')
+app.listen(8080, function() {
+  console.log('Example app listening on port 8080!')
 });
