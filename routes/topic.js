@@ -1,4 +1,3 @@
-//페이지 생성 클릭했을때
 var express = require('express');
 var router = express.Router();
 var path = require('path');
@@ -6,6 +5,7 @@ var fs = require('fs');
 var sanitizeHtml = require('sanitize-html');
 var template = require('../public/js/template.js');
 
+//페이지 생성 클릭했을때
 router.get('/create', function(request, response) {
     var title = 'WEB - create';
     var list = template.list(request.list);

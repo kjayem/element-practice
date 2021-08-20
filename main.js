@@ -1,11 +1,11 @@
 const express = require('express');
 const app = express();
 var fs = require('fs');
-var qs = require('querystring');
 var bodyParser = require('body-parser');
 var compression = require('compression');
-var template = require('./public/js/template.js');
+var indexRouter = require('./routes/index');
 var topicRouter = require('./routes/topic');
+
 
 //public 안에있는 정적인 파일들을 사용하기 위함
 app.use(express.static('public'));
@@ -18,24 +18,12 @@ app.get('*', function(req, res, next) {
   });
 });
 
+// routers
+app.use('/', indexRouter);
 app.use('/topic', topicRouter);
 
-//홈페이지
-// app.get('/', (req, res) => res.send('Hello World!'))
-app.get('/', function(req, res) {
-    var title = 'jayemk';
-    var description = 'Hello, Node.js';
-    var list = template.list(req.list);
-    var html = template.HTML(title, list,
-      `<h2>${title}</h2>${description}
-      <img src="/img/hello.jpg" style="width: 300px; display: block; margin-top: 10px;">`,
-      `<a href="/topic/create">create</a>`
-    );
-    res.send(html);
-});
 
-
-
+// error handlers
 app.use(function(req, res, next) {
   res.status(404).send('Sorry cant find that!')
 });
@@ -45,6 +33,6 @@ app.use(function (err, req, res, next) {
   res.status(500).send('Something broke!')
 });
 
-app.listen(3000, function() {
-  console.log('Example app listening on port 3000!')
+app.listen(8080, function() {
+  console.log('Example app listening on port 8080!')
 });
